@@ -9,6 +9,19 @@ attribute :type, :kind_of => String, :equal_to => ['A', 'CNAME'], :default => 'A
 attribute :ttl, :kind_of => Fixnum, :default => 1
 
 def exists?
+    if node['cloudflare']['check_with_DNS']
+        Chef::Log.info "Trying to check DNS record #{name} with DNS server"
+        Chef::Application.fatal!("You need to specify a DNS server in the ['cloudflare']['DNS_server'] attribute to use the ['cloudflare']['check_with_DNS'] option") unless node['cloudflare']['DNS_server']
+        resolver = ::Resolv::DNS.open({:nameserver=>[node['cloudflare']['DNS_server']]})
+        case type
+        when 'A'
+            resolver.getresource(record_name, Resolv::DNS::Resource::IN::A).address
+        when 'CNAME'
+            resolver.getresource(record_name, Resolv::DNS::Resource::IN::CNAME).name
+        end.to_s == content and return true rescue [Resolv::ResolvError, Resolv::ResolvTimeout]
+        # if we didn't what we expected, we still ask cloudflare
+        Chef::Log.info "DNS record #{name} wasn't found on DNS server #{node['cloudflare']['DNS_server']}"
+    end
     cf_record = get_same_name_record or return false
     cf_record['zone_name'] == zone && cf_record['display_name'] == record_name && cf_record['content'] == content && cf_record['type'] == type && cf_record['ttl'] == ttl.to_s
 end
@@ -42,6 +55,6 @@ end
 private
 
 def get_same_name_record
-    Chef::Application.fatal!("Unknown DNS zone #{zone}!") unless node.cloudflare_client.zone_exists? zone
+    Chef::Application.fatal!("Unknown DNS zone #{zone}!") if node['cloudflare']['check_zone'] && !node.cloudflare_client.zone_exists?(zone)
     node.cloudflare_client.get_record zone, record_name
 end

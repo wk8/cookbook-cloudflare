@@ -1,6 +1,9 @@
 # adding a few useful methods to the vanilla Cloudflare class
 class CloudFlare
 
+    # custom timeout to avoid timing out
+    TIMEOUT = 10
+
     # This method deletes a DNS record by name
     #
     # @param zone [String]
@@ -14,7 +17,10 @@ class CloudFlare
     #
     # @param zone [String]
     def zone_exists? zone
-        zone_check(zone)['response']['zones'][zone] != 0 rescue false
+        zone_load_multi['response']['zones']['objs'].each do |z|
+            return true if z['zone_name'] == zone
+        end rescue NoMethodError
+        false
     end
 
     # This method checks that the credentials are valid
@@ -35,10 +41,17 @@ class CloudFlare
 
     private
 
-    # Memoizes the result of a 'zone' call
+    # Memoizes the results of 'rec_load_all' calls
+    # to avoid making too many calls to the API
     #
     # @param zone [String]
     def rec_load_all zone
-        @zone_cache ||= super zone
+        @rec_load_all_cache ||= {}
+        @rec_load_all_cache[zone] ||= super zone
+    end
+
+    # same with zone_load_multi
+    def zone_load_multi
+        @zone_load_multi_cache ||= super zone_load_multi
     end
 end

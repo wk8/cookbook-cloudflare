@@ -30,6 +30,7 @@ def load_cloudflare_gem
     chef_gem 'cloudflare' do
         action :install
     end
+    require 'resolv'
     require 'cloudflare'
     @@cloudflare_gem_loaded = true
 end
