@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cloudflare.
 
+## 0.1.2:
+
+* Changed default DNS server from Google's to Cloudflare's to avoid new records from not resolving for a long time on Google's server
+
 ## 0.1.1:
 
 * Some small bug fixes

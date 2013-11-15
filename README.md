@@ -22,7 +22,7 @@ There also are a number of optional node attributes:
 * `['cloudflare']['check_credentials']`: whether to check your Cloudflare credentials before attempting any API call (defaults to `true`)
 * `['cloudflare']['check_zone']`: whether to check if the specified DNS zone(s) exist(s) on your Cloudflare account before trying to add or delete records (defaults to `true`)
 * `['cloudflare']['check_with_DNS']`: whether to try checking your records' existence against a DNS server rather than querying the Cloudflare API (will still query the Cloudflare API if the DNS server does not return what's expected - defaults to `false`)
-* `['cloudflare']['DNS_server']`: if you use the `check_with_DNS` option, that is the DNS server that will be queried (defaults to `8.8.8.8`, which is Google's main public DNS server)
+* `['cloudflare']['DNS_server']`: if you use the `check_with_DNS` option, that is the DNS server that will be queried (defaults to `ns.cloudflare.com`, which is Cloudflare's main public DNS server)
 
 Those attributes come in especially handy if you have a number of servers and get throttled by Cloudflare's API limits.
 
@@ -70,6 +70,9 @@ Feel free to reach me at <wk8.github@gmail.com>
 
 Changes
 =======
+
+* 0.1.2 (Nov 14, 2013)
+    * Changed default DNS server from Google's to Cloudflare's to avoid new records from not resolving for a long time on Google's server
 
 * 0.1.1 (Nov 6, 2013)
     * Some small bug fixes

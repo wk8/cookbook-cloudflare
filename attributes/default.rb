@@ -9,6 +9,5 @@ default['cloudflare']['check_zone'] = true
 # making too many requests to Cloudflare if you have a number of servers
 default['cloudflare']['check_with_DNS'] = false
 # If you set the attribute above to true, that's the DNS server we're going
-# to ask - defaults to Google's main public DNS server
-# (see https://developers.google.com/speed/public-dns/docs/using)
-default['cloudflare']['DNS_server'] = '8.8.8.8'
+# to ask - defaults to Cloudflare's main public DNS server
+default['cloudflare']['DNS_server'] = 'ns.cloudflare.com'
