@@ -52,6 +52,6 @@ class CloudFlare
 
     # same with zone_load_multi
     def zone_load_multi
-        @zone_load_multi_cache ||= super zone_load_multi
+        @zone_load_multi_cache ||= super
     end
 end
