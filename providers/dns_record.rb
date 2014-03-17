@@ -29,6 +29,7 @@ def load_cloudflare_gem
     return if defined? @@cloudflare_gem_loaded
     chef_gem 'cloudflare' do
         action :install
+        version "1.1.2"
     end
     require 'resolv'
     require 'cloudflare'
