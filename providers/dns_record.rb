@@ -1,5 +1,5 @@
 action :create do
-    load_cloudflare_gem
+    load_cloudflare_cookbook_gems
     if new_resource.exists?
         Chef::Log.info "DNS record #{new_resource} already exists, nothing more to do"
     else
@@ -13,7 +13,7 @@ action :create do
 end
 
 action :delete do
-    load_cloudflare_gem
+    load_cloudflare_cookbook_gems
     if new_resource.name_exists?
         Chef::Log.info "Deleting DNS record #{new_resource}"
         new_resource.delete
@@ -22,15 +22,17 @@ action :delete do
     end
 end
 
+
 private
 
 # this needs to be done at run time, not compile time
-def load_cloudflare_gem
-    return if defined? @@cloudflare_gem_loaded
+def load_cloudflare_cookbook_gems
+    return if defined? @@cloudflare_cookbook_gems_loaded
     chef_gem 'cloudflare' do
         action :install
+        version '2.0.1'
     end
     require 'resolv'
     require 'cloudflare'
-    @@cloudflare_gem_loaded = true
+    @@cloudflare_cookbook_gems_loaded = true
 end

@@ -1,5 +1,12 @@
-# adding a few useful methods to the vanilla Cloudflare class
-class CloudFlare
+# still haven't figured out a proper way to extend a gem in a Chef lib... :-/
+# this is past ugly...
+module CloudFlare
+    class Connection
+    end
+end
+
+# adding a few useful methods to the vanilla Cloudflare library
+class CloudflareClient < CloudFlare::Connection
 
     # custom timeout to avoid timing out
     TIMEOUT = 10
@@ -54,4 +61,5 @@ class CloudFlare
     def zone_load_multi
         @zone_load_multi_cache ||= super
     end
+
 end
