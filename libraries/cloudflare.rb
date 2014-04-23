@@ -40,24 +40,47 @@ class CloudflareClient < CloudFlare::Connection
     # @param zone [String]
     # @param name [String]
     def get_record zone, name
-        rec_load_all(zone)['response']['recs']['objs'].each do |rec|
+        get_all_records_for_zone(zone).each do |rec|
             return rec if rec['display_name'] == name && rec['zone_name'] == zone
         end rescue NoMethodError
         nil
     end
 
-    private
-
-    # Memoizes the results of 'rec_load_all' calls
-    # to avoid making too many calls to the API
+    # The vanilla lib's 'rec_load_all' implementation doesn't account (as of v2.0.1)
+    # for the fact that CloudFlare paginates the results...
+    # TODO: do a PR on them
     #
     # @param zone [String]
-    def rec_load_all zone
-        @rec_load_all_cache ||= {}
-        @rec_load_all_cache[zone] ||= super zone
+    # @param offset [Integer]
+    def rec_load_all zone, offset = 0
+        send_req({a: :rec_load_all, z: zone, o: offset})
     end
 
-    # same with zone_load_multi
+    private
+
+    # Returns an array containing all the records for this zone,
+    # accounting for pagination
+    # Also memoizes the result
+    #
+    # @param zone [String]
+    def get_all_records_for_zone zone
+        @records_cache ||= {}
+        unless @records_cache[zone]
+           # not cached, we need to retrieve it
+           @records_cache[zone] = []
+           offset = 0
+           has_more = true
+           while has_more
+               response = rec_load_all zone, offset
+               has_more = response['response']['recs']['has_more']
+               offset += response['response']['recs']['count']
+               @records_cache[zone].concat(response['response']['recs']['objs'])
+           end
+        end
+        @records_cache[zone]
+    end
+
+    # we memoize zone_load_multi too
     def zone_load_multi
         @zone_load_multi_cache ||= super
     end

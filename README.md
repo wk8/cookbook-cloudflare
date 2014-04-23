@@ -71,8 +71,12 @@ Feel free to reach me at <wk8.github@gmail.com>
 Changes
 =======
 
+* 0.1.4 (Apr 23, 2014)
+    * Fixed a bug when there were too many records to be loaded in one call from CloudFlare
+    * Made it more compliant with ill-formatted record names
+
 * 0.1.3 (Mar 21, 2014)
-    * Upgraded the Cloudflare gem to newest version 2.0.1
+    * Upgraded the Cloudflare gem to the newest version 2.0.1
 
 * 0.1.2 (Nov 14, 2013)
     * Changed default DNS server from Google's to Cloudflare's to avoid new records from not resolving for a long time on Google's server

@@ -15,9 +15,9 @@ def exists?
         resolver = ::Resolv::DNS.open({:nameserver=>[node['cloudflare']['DNS_server']]})
         case type
         when 'A'
-            resolver.getresource(record_name, Resolv::DNS::Resource::IN::A).address
+            resolver.getresource(complete_url, Resolv::DNS::Resource::IN::A).address
         when 'CNAME'
-            resolver.getresource(record_name, Resolv::DNS::Resource::IN::CNAME).name
+            resolver.getresource(complete_url, Resolv::DNS::Resource::IN::CNAME).name
         end.to_s == content and return true rescue [Resolv::ResolvError, Resolv::ResolvTimeout]
         # if we didn't what we expected, we still ask cloudflare
         Chef::Log.info "DNS record #{name} wasn't found on DNS server #{node['cloudflare']['DNS_server']}"
@@ -42,6 +42,9 @@ alias_method :old_record_name, :record_name
 def record_name *args
     # we default to the resource name if no explicit record_name was given
     @record_name = name if !@record_name
+    # the record name can't finish with the zone name, nor a dot
+    @record_name = @record_name.chomp zone
+    @record_name.chomp! '.'
     old_record_name *args
 end
 
@@ -53,6 +56,10 @@ def content *args
 end
 
 private
+
+def complete_url
+    "#{record_name}.#{zone}"
+end
 
 def get_same_name_record
     Chef::Application.fatal!("Unknown DNS zone #{zone}!") if node['cloudflare']['check_zone'] && !node.cloudflare_client.zone_exists?(zone)

@@ -2,9 +2,14 @@
 
 This file is used to list changes made in each version of cloudflare.
 
-## 0.1.2:
+## 0.1.4:
 
-* Upgraded the Cloudflare gem to newest version 2.0.1
+* Fixed a bug when there were too many records to be loaded in one call from CloudFlare
+* Made it more compliant with ill-formatted record names
+
+## 0.1.3:
+
+* Upgraded the Cloudflare gem to the newest version 2.0.1
 
 ## 0.1.2:
 
