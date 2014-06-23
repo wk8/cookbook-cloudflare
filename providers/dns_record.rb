@@ -16,6 +16,9 @@ action :create do
     load_cloudflare_cookbook_gems
     if new_resource.exists?
         Chef::Log.info "DNS record #{new_resource} already exists, nothing more to do"
+    else
+        Chef::Log.info "Creating DNS record #{new_resource}"
+        new_resource.create
     end
 end
 
