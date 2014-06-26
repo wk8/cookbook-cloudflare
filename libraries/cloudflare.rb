@@ -29,11 +29,15 @@ class CloudflareClient < CloudFlare::Connection
     def rec_delete_by_name zone, name
         get_all_records_for_zone(zone).each do |rec|
             if rec['display_name'] == name && rec['zone_name'] == zone
-                rec_delete(zone, rec['id'])
+                rec_delete(zone, rec['rec_id'])
             end
-        end rescue NoMethodError
+        end
+    end
 
-        rec_id = get_record(zone, name)['rec_id'] or return false
+    def rec_delete_with_content zone, name, content
+        record = get_record_with_content(zone, name, content) or return false
+        rec_id = record['rec_id']
+        rec_delete(zone, rec_id)
     end
 
     # This method returns true if that zone exists
@@ -92,18 +96,17 @@ class CloudflareClient < CloudFlare::Connection
     #
     # @param zone [String]
     def get_all_records_for_zone zone
-        @records_cache ||= {}
         # not cached, we need to retrieve it
-        @records_cache[zone] = []
+        records = []
         offset = 0
         has_more = true
         while has_more
             response = rec_load_all zone, offset
             has_more = response['response']['recs']['has_more']
             offset += response['response']['recs']['count']
-            @records_cache[zone].concat(response['response']['recs']['objs'])
+            records.concat(response['response']['recs']['objs'])
         end
-        @records_cache[zone]
+        records
     end
 
     # we memoize zone_load_multi too
