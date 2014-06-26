@@ -11,12 +11,32 @@ class CloudflareClient < CloudFlare::Connection
     # custom timeout to avoid timing out
     TIMEOUT = 10
 
+    def rec_new zone, type, record_name, content, ttl, orange_cloud
+      super(zone, type, record_name, content, ttl)
+      if orange_cloud
+        record = get_record_with_content(zone, record_name, content) or return false
+        rec_id = record['rec_id']
+        rec_edit(zone,  type, rec_id, record_name, content, ttl,
+            :service_mode => orange_cloud
+          )
+      end
+    end
+
     # This method deletes a DNS record by name
     #
     # @param zone [String]
     # @param name [String]
     def rec_delete_by_name zone, name
-        rec_id = get_record(zone, name)['rec_id'] or return false
+        get_all_records_for_zone(zone).each do |rec|
+            if rec['display_name'] == name && rec['zone_name'] == zone
+                rec_delete(zone, rec['rec_id'])
+            end
+        end
+    end
+
+    def rec_delete_with_content zone, name, content
+        record = get_record_with_content(zone, name, content) or return false
+        rec_id = record['rec_id']
         rec_delete(zone, rec_id)
     end
 
@@ -36,12 +56,24 @@ class CloudflareClient < CloudFlare::Connection
     end
 
     # Gets all the metadata hash for a given record
-    # 
+    #
     # @param zone [String]
     # @param name [String]
     def get_record zone, name
         get_all_records_for_zone(zone).each do |rec|
             return rec if rec['display_name'] == name && rec['zone_name'] == zone
+        end rescue NoMethodError
+        nil
+    end
+
+    # Gets all the metadata hash for a given record
+    #
+    # @param zone [String]
+    # @param name [String]
+    # @param content [String]
+    def get_record_with_content zone, name, content
+        get_all_records_for_zone(zone).each do |rec|
+            return rec if rec['display_name'] == name && rec['zone_name'] == zone && rec['content'] == content
         end rescue NoMethodError
         nil
     end
@@ -64,20 +96,17 @@ class CloudflareClient < CloudFlare::Connection
     #
     # @param zone [String]
     def get_all_records_for_zone zone
-        @records_cache ||= {}
-        unless @records_cache[zone]
-           # not cached, we need to retrieve it
-           @records_cache[zone] = []
-           offset = 0
-           has_more = true
-           while has_more
-               response = rec_load_all zone, offset
-               has_more = response['response']['recs']['has_more']
-               offset += response['response']['recs']['count']
-               @records_cache[zone].concat(response['response']['recs']['objs'])
-           end
+        # not cached, we need to retrieve it
+        records = []
+        offset = 0
+        has_more = true
+        while has_more
+            response = rec_load_all zone, offset
+            has_more = response['response']['recs']['has_more']
+            offset += response['response']['recs']['count']
+            records.concat(response['response']['recs']['objs'])
         end
-        @records_cache[zone]
+        records
     end
 
     # we memoize zone_load_multi too
