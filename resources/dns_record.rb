@@ -7,6 +7,7 @@ attribute :zone, :kind_of => String, :required => true
 attribute :content, :kind_of => [String, FalseClass], :default => false
 attribute :type, :kind_of => String, :equal_to => ['A', 'CNAME'], :default => 'A'
 attribute :ttl, :kind_of => Fixnum, :default => 1
+attribute :orange_cloud, :kind_of => [TrueClass, FalseClass], :default => false
 
 def exists?
     if node['cloudflare']['check_with_DNS']
@@ -23,7 +24,7 @@ def exists?
         Chef::Log.info "DNS record #{name} wasn't found on DNS server #{node['cloudflare']['DNS_server']}"
     end
     cf_record = get_same_name_record or return false
-    cf_record['zone_name'] == zone && cf_record['display_name'] == record_name && cf_record['content'] == content && cf_record['type'] == type && cf_record['ttl'] == ttl.to_s
+    (cf_record['service_type'] == 1) == orange_cloud && cf_record['zone_name'] == zone && cf_record['display_name'] == record_name && cf_record['content'] == content && cf_record['type'] == type && cf_record['ttl'] == ttl.to_s
 end
 
 def name_exists?
@@ -31,7 +32,7 @@ def name_exists?
 end
 
 def create
-    node.cloudflare_client.rec_new zone, type, record_name, content, ttl
+    node.cloudflare_client.rec_new zone, type, record_name, content, ttl, orange_cloud
 end
 
 def delete
