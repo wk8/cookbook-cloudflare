@@ -16,8 +16,13 @@ class CloudflareClient < CloudFlare::Connection
     # @param zone [String]
     # @param name [String]
     def rec_delete_by_name zone, name
+        get_all_records_for_zone(zone).each do |rec|
+            if rec['display_name'] == name && rec['zone_name'] == zone
+                rec_delete(zone, rec['id'])
+            end
+        end rescue NoMethodError
+
         rec_id = get_record(zone, name)['rec_id'] or return false
-        rec_delete(zone, rec_id)
     end
 
     # This method returns true if that zone exists
@@ -36,7 +41,7 @@ class CloudflareClient < CloudFlare::Connection
     end
 
     # Gets all the metadata hash for a given record
-    # 
+    #
     # @param zone [String]
     # @param name [String]
     def get_record zone, name
