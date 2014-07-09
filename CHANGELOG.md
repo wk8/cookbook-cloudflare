@@ -2,6 +2,12 @@
 
 This file is used to list changes made in each version of cloudflare.
 
+## 0.1.6:
+
+* Added the `shared_A_record` attribute to the LWRP to make it possible to have several A records with the same name (aka DNS load balancing)
+* Properly updating LWRP states when an action has been performed
+* More complete example recipes (should integrate Test Kitchen soon)
+
 ## 0.1.5:
 
 * Included Vagrant & Berkshelf for easier development

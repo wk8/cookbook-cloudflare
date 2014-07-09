@@ -3,7 +3,7 @@
 
 CLOUDFLARE_EMAIL = ENV['CLOUDFLARE_EMAIL']
 CLOUDFLARE_API_KEY = ENV['CLOUDFLARE_API_KEY']
-CLOUDFLARE_ZONE = ENV['CLOUDFLARE_DOMAIN']
+CLOUDFLARE_ZONE = ENV['CLOUDFLARE_ZONE']
 
 if !CLOUDFLARE_EMAIL || !CLOUDFLARE_API_KEY || !CLOUDFLARE_ZONE
   raise 'You must define the CLOUDFLARE_EMAIL, CLOUDFLARE_API_KEY and CLOUDFLARE_ZONE environment variables'
@@ -28,12 +28,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
           'email' => CLOUDFLARE_EMAIL,
           'api_key' => CLOUDFLARE_API_KEY
         },
-        'example_zone' => CLOUDFLARE_ZONE
+        'example_zone' => CLOUDFLARE_ZONE,
+        'debug' => true
       }
     }
 
     chef.run_list = [
       'recipe[cloudflare::example]',
     ]
+    if ENV['CLOUDFLARE_CLEANUP']
+      chef.run_list << 'recipe[cloudflare::example-cleanup]'
+    end
   end
 end

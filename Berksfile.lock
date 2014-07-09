@@ -4,4 +4,4 @@ DEPENDENCIES
     metadata: true
 
 GRAPH
-  cloudflare (0.1.4)
+  cloudflare (0.1.6)

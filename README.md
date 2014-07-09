@@ -19,9 +19,10 @@ I strongly recommend storing your Cloudflare credentials in an encrypted data ba
 
 There also are a number of optional node attributes:
 
-* `['cloudflare']['check_credentials']`: whether to check your Cloudflare credentials before attempting any API call (defaults to `true`)
-* `['cloudflare']['check_zone']`: whether to check if the specified DNS zone(s) exist(s) on your Cloudflare account before trying to add or delete records (defaults to `true`)
-* `['cloudflare']['check_with_DNS']`: whether to try checking your records' existence against a DNS server rather than querying the Cloudflare API (will still query the Cloudflare API if the DNS server does not return what's expected - defaults to `false`)
+* `['cloudflare']['debug']`: used to defined other default attributes (see below - defaults to `false`); basically, you might want to turn that to true when setting up your cookbook, but **be sure to turn that back to `false` when running this cookbook on your actual servers to avoid hitting Cloudflare's API thresholds**
+* `['cloudflare']['check_credentials']`: whether to check your Cloudflare credentials before attempting any API call (defaults to `node['cloudflare']['debug']`)
+* `['cloudflare']['check_zone']`: whether to check if the specified DNS zone(s) exist(s) on your Cloudflare account before trying to add or delete records (defaults to `node['cloudflare']['debug']`)
+* `['cloudflare']['check_with_DNS']`: whether to try checking your records' existence against a DNS server rather than querying the Cloudflare API (will still query the Cloudflare API if the DNS server does not return what's expected - defaults to `true`)
 * `['cloudflare']['DNS_server']`: if you use the `check_with_DNS` option, that is the DNS server that will be queried (defaults to `ns.cloudflare.com`, which is Cloudflare's main public DNS server)
 
 Those attributes come in especially handy if you have a number of servers and get throttled by Cloudflare's API limits.
@@ -41,7 +42,8 @@ This resource defines the following attributes (they're all `String`s unless oth
 * `zone` (required): the zone of the DNS record
 * `content` (optional - defaults to `node.ipaddress`): the content of the DNS record
 * `type` (one of `'A'` or `'CNAME'` - defaults to `'A'`): the type of the DNS record. Please let me know if you'd like other record types supported
-* `ttl` (must be a `Fixnum` - defaults to `1`, which, according to Cloudflare doc, means 'automatic'): the ttl of the DNS record
+* `ttl` (must be a `Fixnum` - defaults to `1`, which, according to Cloudflare's doc, means 'automatic'): the ttl of the DNS record
+* `shared_A_record` (boolean - optional, defaults to `false`): set that to `true` if you want to have several A records with the same name (aka DNS load balancing). Also works for deleting a single A record when several share the same name. Disclaimer: IMHO, that's [pretty bad practice](http://bitplex.me/2008/09/why-round-robin-dns-is-bad.html). This attribute is totally ignored for CNAME records.
 
 For instance, the following code in your cookbook's recipe would create an `A` DNS record `server_name.example.com` pointing to `1.2.3.4` with an automatic TTL:
 
@@ -82,7 +84,9 @@ You also need to define 3 environment variables to be able to use my Vagrantfile
 
 You can do so by typing e.g. `export CLOUDFLARE_EMAIL='me@example.com'` and so on in your shell.
 
-Be aware that the example recipe will then proceed to create a few DNS records on that DNS zone with your credentials, so use with caution!
+Be aware that the example recipe will then proceed to create a few DNS records on that DNS zone with your credentials, so use with caution! That being said, all said records will start with 'cl-cb-test-' so they have little chance of clonflicting with exisiting records on your account.
+
+You can also easily clean up the test records created that way by running `CLOUDFLARE_CLEANUP=1 vagrant provision`.
 
 Then playing with this cookbook should be as easy as running `bundle install && vagrant up`!
 
@@ -94,6 +98,11 @@ Feel free to reach me at <wk8.github@gmail.com>
 
 Changes
 =======
+
+* 0.1.6 (Jul 9, 2014)
+    * Added the `shared_A_record` attribute to the LWRP to make it possible to have several A records with the same name (aka DNS load balancing)
+    * Properly updating LWRP states when an action has been performed
+    * More complete example recipes (should integrate Test Kitchen soon)
 
 * 0.1.5 (Jul 8, 2014)
     * Included Vagrant & Berkshelf for easier development
