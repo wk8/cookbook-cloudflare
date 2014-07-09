@@ -62,6 +62,30 @@ Another example:
 
 would delete the `server_name.example.com` record from your Cloudflare account.
 
+Example recipe
+==============
+
+You can have a look at the `cloudflare::example` recipe for examples on how to use the LWRPs.
+
+You can also test my cookbook with Vagrant (see the 'Vagrant' section below).
+
+Vagrant
+=======
+
+You can test this cookbook locally, provided you have a bunch of free software installed, namely [Vagrant](https://www.vagrantup.com/downloads), [Berkshelf](http://berkshelf.com/), [VirtualBox](https://www.virtualbox.org/), and a couple of Vagrant plugins: [Vagrant-Berkshelf](https://github.com/berkshelf/vagrant-berkshelf) and [Vagrant-Omnibus](https://github.com/schisamo/vagrant-omnibus).
+
+You also need to define 3 environment variables to be able to use my Vagrantfile:
+
+* `CLOUDFLARE_EMAIL`
+* `CLOUDFLARE_API_KEY`
+* `CLOUDFLARE_DOMAIN`
+
+You can do so by typing e.g. `export CLOUDFLARE_EMAIL='me@example.com'` and so on in your shell.
+
+Be aware that the example recipe will then proceed to create a few DNS records on that DNS zone with your credentials, so use with caution!
+
+Then playing with this cookbook should be as easy as running `bundle install && vagrant up`!
+
 Contributing & Feedback
 =======================
 
@@ -70,6 +94,9 @@ Feel free to reach me at <wk8.github@gmail.com>
 
 Changes
 =======
+
+* 0.1.5 (Jul 8, 2014)
+    * Included Vagrant & Berkshelf for easier development
 
 * 0.1.4 (Apr 23, 2014)
     * Fixed a bug when there were too many records to be loaded in one call from CloudFlare

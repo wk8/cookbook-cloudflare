@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cloudflare.
 
+## 0.1.5:
+
+* Included Vagrant & Berkshelf for easier development
+
 ## 0.1.4:
 
 * Fixed a bug when there were too many records to be loaded in one call from CloudFlare
