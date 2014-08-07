@@ -64,6 +64,30 @@ Another example:
 
 would delete the `server_name.example.com` record from your Cloudflare account.
 
+`threat_control` Resource
+-------------------------------
+CloudFlare's threat control can be used to whitelist or blacklist IPs hitting your domains going through their network.
+cf. [CloudFlare FAQ - How do I block or trust visitors in Threat Control?](https://support.cloudflare.com/hc/en-us/articles/200171266-How-do-I-block-or-trust-visitors-in-Threat-Control-)
+
+Attribute:
+
+* `ip` (optional): the IP of the server you want to manipulate. Defaults to the current node IP.
+
+Actions: `:whitelist`, `:blacklist`, `:remove_ip`
+Should be self-explanatory, the latter one being used to remove a white/blacklisted IP from their respective list.
+
+Examples:
+
+    cloudflare_threat_control 'whitelist_current_server' do
+      action :whitelist
+    end
+
+    cloudflare_threat_control 'shall_we_trust_this?' do
+      ip '208.73.210.203'
+      action :blacklist
+    end
+
+
 Example recipe
 ==============
 

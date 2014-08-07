@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cloudflare.
 
+## 0.1.7:
+
+* Added the `threat_control` LWRP allowing to whitelist or blacklist IPs on CloudFlare
+
 ## 0.1.6:
 
 * Added the `shared_A_record` attribute to the LWRP to make it possible to have several A records with the same name (aka DNS load balancing)
