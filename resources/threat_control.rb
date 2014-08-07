@@ -1,7 +1,7 @@
 actions :whitelist, :blacklist, :remove_ip
 default_action :nothing
 
-attribute :ip, :kind_of => [String, FalseClass], :default => false  # defaults to node.ipaddress
+attribute :ip, :kind_of => String, :default => node.ipaddress
 
 SAFETY_INTERVAL = 1  # day(s), interval during which the node's attributes caching remains valid
 
@@ -59,12 +59,3 @@ def remove_ip
   update_whitelist_status_cache('removed')
   Chef::Log.info "[CF] Removed IP #{ip} from threat control"
 end
-
-
-alias_method :old_ip, :ip
-def ip *args
-  # we default to the node's ipaddress if no IP was explicitely given
-  @ip = node.ipaddress if !@ip
-  old_ip *args
-end
-
