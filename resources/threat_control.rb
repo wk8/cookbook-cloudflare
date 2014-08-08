@@ -35,7 +35,7 @@ def cache_status? status_to_check
 end
 
 def update_whitelist_status_cache new_status
-  node.normal[:cloudflare][:threat_control][ip] = {
+  node[:cloudflare][:threat_control][ip] = {
     :status => new_status,
     :updated_at => DateTime.now()
   }
