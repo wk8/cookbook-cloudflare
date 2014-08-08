@@ -5,7 +5,7 @@ attribute :ip, :kind_of => String, :default => node.ipaddress
 
 SAFETY_INTERVAL = 1  # day(s), interval during which the node's attributes caching remains valid
 
-require ('date')
+require 'date'
 
 
 def whitelisted?
@@ -22,7 +22,7 @@ end
 
 # Return true if the cache is not expired (<1d) and indicates said IP has a status matching the one given
 def cache_status? status_to_check
-  status_cache = node.normal[:cloudflare][:threat_control][ip]
+  status_cache = node[:cloudflare][:threat_control][ip]
 
   if !(status_cache.nil? || status_cache.empty?)
     if DateTime.now() < status_cache[:updated_at] + SAFETY_INTERVAL
@@ -56,7 +56,7 @@ end
 private
 
 def update_whitelist_status_cache new_status
-  node[:cloudflare][:threat_control][ip] = {
+  node.normal[:cloudflare][:threat_control][ip] = {
     :status => new_status,
     :updated_at => DateTime.now()
   }
