@@ -34,14 +34,6 @@ def cache_status? status_to_check
   return false
 end
 
-def update_whitelist_status_cache new_status
-  node[:cloudflare][:threat_control][ip] = {
-    :status => new_status,
-    :updated_at => DateTime.now()
-  }
-end
-
-
 def whitelist
   node.cloudflare_client.whitelist(ip)
   update_whitelist_status_cache('whitelisted')
@@ -58,4 +50,14 @@ def remove_ip
   node.cloudflare_client.remove_ip(ip)
   update_whitelist_status_cache('removed')
   Chef::Log.info "[CF] Removed IP #{ip} from threat control"
+end
+
+
+private
+
+def update_whitelist_status_cache new_status
+  node[:cloudflare][:threat_control][ip] = {
+    :status => new_status,
+    :updated_at => DateTime.now()
+  }
 end
