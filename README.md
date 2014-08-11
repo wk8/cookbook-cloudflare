@@ -123,6 +123,9 @@ Feel free to reach me at <wk8.github@gmail.com>
 Changes
 =======
 
+* 0.1.7
+    * Added the `threat_control` LWRP allowing to whitelist or blacklist IPs on CloudFlare
+
 * 0.1.6 (Jul 9, 2014)
     * Added the `shared_A_record` attribute to the LWRP to make it possible to have several A records with the same name (aka DNS load balancing)
     * Properly updating LWRP states when an action has been performed
