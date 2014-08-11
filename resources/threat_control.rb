@@ -9,15 +9,15 @@ require 'date'
 
 
 def whitelisted?
-  return cache_status?('whitelisted')
+  cache_status?('whitelisted')
 end
 
 def blacklisted?
-  return cache_status?('blacklisted')
+  cache_status?('blacklisted')
 end
 
 def removed?
-  return cache_status?('removed')
+  cache_status?('removed')
 end
 
 # Return true if the cache is not expired (<1d) and indicates said IP has a status matching the one given
