@@ -4,6 +4,7 @@ action :whitelist do
     Chef::Log.info "[CF] IP #{new_resource.ip} is already whitelisted, nothing to do"
   else
     new_resource.whitelist
+    new_resource.updated_by_last_action true
   end
 end
 
@@ -13,6 +14,7 @@ action :blacklist do
     Chef::Log.info "[CF] IP #{new_resource.ip} is already blacklisted, nothing to do"
   else
     new_resource.blacklist
+    new_resource.updated_by_last_action true
   end
 end
 
@@ -22,5 +24,6 @@ action :remove_ip do
     Chef::Log.info "[CF] IP #{new_resource.ip} is already removed from CloudFlare threat control, nothing to do"
   else
     new_resource.remove_ip
+    new_resource.updated_by_last_action true
   end
 end
