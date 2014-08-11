@@ -24,7 +24,7 @@ end
 def cache_status? status_to_check
   status_cache = node[:cloudflare][:threat_control][ip]
 
-  if !(status_cache.nil? || status_cache.empty?)
+  if !status_cache.nil? && !status_cache.empty?
     if DateTime.now() < status_cache[:updated_at] + SAFETY_INTERVAL
       Chef::Log.info "[CF] Local threat control cache for #{ip} was set on #{status_cache[:updated_at]} and is '#{status_cache[:status]}'"
       return status_cache[:status] == status_to_check
