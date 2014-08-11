@@ -3,8 +3,6 @@ default_action :nothing
 
 attribute :ip, :kind_of => String, :default => node.ipaddress
 
-SAFETY_INTERVAL = 1  # day(s), interval during which the node's attributes caching remains valid
-
 require 'date'
 
 
@@ -23,9 +21,10 @@ end
 # Return true if the cache is not expired (<1d) and indicates said IP has a status matching the one given
 def cache_status? status_to_check
   status_cache = node[:cloudflare][:threat_control][ip]
+  safety_interval = node[:cloudflare][:threat_control][:cache_duration]
 
   if !status_cache.nil? && !status_cache.empty?
-    if DateTime.now() < status_cache[:updated_at] + SAFETY_INTERVAL
+    if DateTime.now() < status_cache[:updated_at] + safety_interval
       Chef::Log.info "[CF] Local threat control cache for #{ip} was set on #{status_cache[:updated_at]} and is '#{status_cache[:status]}'"
       return status_cache[:status] == status_to_check
     end
