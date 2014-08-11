@@ -112,7 +112,7 @@ Be aware that the example recipe will then proceed to create a few DNS records o
 
 You can also easily clean up the test records created that way by running `CLOUDFLARE_CLEANUP=1 vagrant provision`.
 
-Then playing with this cookbook should be as easy as running `bundle install && vagrant up`!
+Then playing with this cookbook should be as easy as running `bundle install --path vendor/bundle && vagrant up`!
 
 Contributing & Feedback
 =======================
