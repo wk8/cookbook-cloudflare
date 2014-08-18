@@ -16,3 +16,8 @@ default['cloudflare']['check_with_DNS'] = true
 # If you set the attribute above to true, that's the DNS server we're going
 # to ask - defaults to Cloudflare's main public DNS server
 default['cloudflare']['DNS_server'] = 'ns.cloudflare.com'
+
+
+# Interval during which the threat control caching in node's attributes remains valid
+# In days, as a float
+default['cloudflare']['threat_control']['cache_duration'] = 1.0
