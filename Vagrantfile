@@ -21,12 +21,25 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.berkshelf.enabled = true
 
-  config.vm.provision :chef_solo do |chef|
+  # we use chef-zero instead of solo if the plugin is available
+  # that makes it easy to test the caching mechanism for the
+  # threat_control resource
+  if Vagrant.has_plugin? 'vagrant-chef-zero'
+    provisioner = :chef_client
+  else
+    provisioner = :chef_solo
+  end
+
+  config.vm.provision provisioner do |chef|
     chef.json = {
       'cloudflare' => {
         'credentials' => {
           'email' => CLOUDFLARE_EMAIL,
           'api_key' => CLOUDFLARE_API_KEY
+        },
+        'threat_control' => {
+          # one minute, to be able to test quickly
+          'cache_duration' => 1.0 / (24.0 * 60.0)
         },
         'example_zone' => CLOUDFLARE_ZONE,
         'debug' => true

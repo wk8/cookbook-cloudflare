@@ -1,1 +1,4 @@
 /.vagrant
+/.bundle
+/vendor
+/.zero-knife.rb
