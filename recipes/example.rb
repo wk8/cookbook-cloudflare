@@ -76,3 +76,17 @@ cloudflare_dns_record 'CNAME-overwriting' do
   content 'getchef.com'
   record_name "#{prefix}-conflicting-CNAME"
 end
+
+##
+## Threat control testing
+##
+
+cloudflare_threat_control 'whitelist_test_server_a' do
+  ip '172.20.126.126'
+  action :whitelist
+end
+
+cloudflare_threat_control 'blacklist_test_server_b' do
+  ip '172.20.127.127'
+  action :blacklist
+end

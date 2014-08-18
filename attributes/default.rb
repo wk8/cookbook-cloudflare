@@ -16,3 +16,16 @@ default['cloudflare']['check_with_DNS'] = true
 # If you set the attribute above to true, that's the DNS server we're going
 # to ask - defaults to Cloudflare's main public DNS server
 default['cloudflare']['DNS_server'] = 'ns.cloudflare.com'
+
+
+# Interval during which the threat control caching in node's attributes remains valid
+# In days, as a float
+default['cloudflare']['threat_control']['cache_duration'] = 1.0
+# If set to true, we won't care about the cached information - be aware that will
+# result in quite a lot of API calls (one per resource and per chef run)
+default['cloudflare']['threat_control']['disable_cache'] = false
+
+# Do not edit this manually, this is where this cookbook caches the threat-control
+# statuses
+# For the record, it maps IPs to a hash with the 'status' and 'datetime' keys
+default['cloudflare']['threat_control']['status_cache'] = {}

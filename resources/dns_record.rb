@@ -4,7 +4,7 @@ default_action :create
 attribute :name, :name_attribute => true, :kind_of => String, :required => true
 attribute :record_name, :kind_of => [String, FalseClass], :default => false
 attribute :zone, :kind_of => String, :required => true
-attribute :content, :kind_of => [String, FalseClass], :default => false
+attribute :content, :kind_of => String, :default => node.ipaddress
 attribute :type, :kind_of => String, :equal_to => ['A', 'CNAME'], :default => 'A'
 attribute :ttl, :kind_of => Fixnum, :default => 1
 attribute :shared_A_record, :kind_of => [TrueClass, FalseClass], :default => false
@@ -90,13 +90,6 @@ alias_method :old_zone, :zone
 def zone *args
   @zone.downcase! if @zone
   old_zone *args
-end
-
-alias_method :old_content, :content
-def content *args
-  # we default to the node's ipaddress if no content was explicitely given
-  @content = node.ipaddress if !@content
-  old_content *args
 end
 
 def shared_A_record?

@@ -8,3 +8,10 @@ prefix = 'CL-CB-TEST'
     action :delete
   end
 end
+
+['172.20.126.126', '172.20.127.127'].each do |ip|
+  cloudflare_threat_control "remove-threat-control-#{ip}" do
+    ip ip
+    action :remove_ip
+  end
+end

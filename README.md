@@ -1,7 +1,7 @@
 Description
 ===========
 
-This Chef! cookbook defines one LWRP that you can easily use in your own cookbook to create and delete Cloudflare DNS records.
+This Chef! cookbook defines one LWRP that you can easily use in your own cookbook to create and delete Cloudflare DNS records and manage your threat control services.
 
 It is built on top of B4k3r's Ruby wrapper for the Cloudflare API. (https://github.com/B4k3r/cloudflare)
 
@@ -26,6 +26,8 @@ There also are a number of optional node attributes:
 * `['cloudflare']['DNS_server']`: if you use the `check_with_DNS` option, that is the DNS server that will be queried (defaults to `ns.cloudflare.com`, which is Cloudflare's main public DNS server)
 
 Those attributes come in especially handy if you have a number of servers and get throttled by Cloudflare's API limits.
+
+A couple of threat-control-related attributes are explained in the "`threat_control` Resource" section below.
 
 Usage
 =====
@@ -64,10 +66,43 @@ Another example:
 
 would delete the `server_name.example.com` record from your Cloudflare account.
 
+`threat_control` Resource
+-------------------------
+CloudFlare's threat control can be used to whitelist or blacklist IPs hitting your domains going through their network.
+cf. [CloudFlare FAQ - How do I block or trust visitors in Threat Control?](https://support.cloudflare.com/hc/en-us/articles/200171266-How-do-I-block-or-trust-visitors-in-Threat-Control-)
+
+Attribute:
+
+* `ip` (optional): the IP you want to white/blacklist (defaults to `node.ipaddress`)
+
+Actions: `:whitelist`, `:blacklist`, `:remove_ip`
+Should be self-explanatory, the latter one being used to remove a white/blacklisted IP from their respective list.
+Note that the default action is `:nothing`!
+
+Examples:
+
+    cloudflare_threat_control 'whitelist_current_server' do
+      action :whitelist
+    end
+
+    cloudflare_threat_control 'shall_we_trust_this?' do
+      ip '208.73.210.203'
+      action :blacklist
+    end
+
+A word on how this LWRP works: we don't want to have Chef hit Cloudflare's API every time it runs, for Cloudflare's API usage thresholds are pretty low. The thing is, unlike DNS records (for which we can query a DNS server instead of the API), there's no way to double-check the current status without making API calls.
+To get around this, this LWRP caches the current status (and trusts that the cached information is valid) for a while, which is reasonable if your Chef recipe is the only way this should ever be modified in your setup. The cache's validity is controlled by the `['cloudflare']['threat_control']['cache_duration']` node attribute, which defaults to 1 day. Note this attribute expects this duration in days, but does accept floats (so you can set it to `1.0 / 24.0` to reduce it to one hour).
+
+If you happen to have few enough servers that you don't care about Cloudflare's API usage thresholds, or if you really want your recipe to make calls to the API at every run, you can set the `['cloudflare']['threat_control']['disable_cache']` node attribute to `true` (defaults to `false`).
+
+A caveat worth noting with this resource is that [Cloudflare's API](https://www.cloudflare.com/docs/client-api.html) as of today (08/18/14) offers no way to check the current status of a given IP w.r.t threat control settings, nor does it give any information when making a call to set an IP's status regarding its previous status. As a result, _this resource will be marked as updated whenever an API call is made, even if the status wasn't actually changed_.
+
+Note that you can't use the cache with Chef solo, as there's nowhere to save the information to. [Chef-zero](https://github.com/opscode/chef-zero) will do nicely though if you don't have a Chef server around.
+
 Example recipe
 ==============
 
-You can have a look at the `cloudflare::example` recipe for examples on how to use the LWRPs.
+You can have a look at the `cloudflare::example` recipe for examples on how to use the DNS-related LWRPs.
 
 You can also test my cookbook with Vagrant (see the 'Vagrant' section below).
 
@@ -85,10 +120,14 @@ You also need to define 3 environment variables to be able to use my Vagrantfile
 You can do so by typing e.g. `export CLOUDFLARE_EMAIL='me@example.com'` and so on in your shell.
 
 Be aware that the example recipe will then proceed to create a few DNS records on that DNS zone with your credentials, so use with caution! That being said, all said records will start with 'cl-cb-test-' so they have little chance of clonflicting with exisiting records on your account.
+Also, it does white-black list a couple of private IP addresses.
 
 You can also easily clean up the test records created that way by running `CLOUDFLARE_CLEANUP=1 vagrant provision`.
 
-Then playing with this cookbook should be as easy as running `bundle install && vagrant up`!
+Then playing with this cookbook should be as easy as running `bundle install --path vendor/bundle && vagrant up`!
+
+Note that if you want to test/do stuff on the caching mechanism for the threat control LWRP, you'll need to use Chef-zero. For now this project uses the [Vagrant-Chef-Zero](https://github.com/andrewgross/vagrant-chef-zero) plugin, but we'll soon migrate to Test Kitchen.
+To use the Chef-Zero plugin, simply install it, the Vagrantfile will pick it up automatically.
 
 Contributing & Feedback
 =======================
@@ -98,6 +137,9 @@ Feel free to reach me at <wk8.github@gmail.com>
 
 Changes
 =======
+
+* 0.1.7 (Aug 18, 2014)
+    * Added the `threat_control` LWRP allowing to whitelist or blacklist IPs on CloudFlare (see https://support.cloudflare.com/hc/en-us/articles/200171266-How-do-I-block-or-trust-visitors-in-Threat-Control-)
 
 * 0.1.6 (Jul 9, 2014)
     * Added the `shared_A_record` attribute to the LWRP to make it possible to have several A records with the same name (aka DNS load balancing)
@@ -124,3 +166,8 @@ Changes
 
 * 0.1.0 (Oct 3, 2013)
     * Initial release
+
+Contributors
+============
+
+* [Adrien Siebert](https://github.com/asiebert)
