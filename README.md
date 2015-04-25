@@ -138,6 +138,10 @@ Feel free to reach me at <wk8.github@gmail.com>
 Changes
 =======
 
+* 0.1.8 (Apr 25, 2014):
+    * Upgraded the cloudflare gem to 2.0.3
+    * Added the `service_mode` attribute to the `cloudflare_dns_record` resource
+
 * 0.1.7 (Aug 18, 2014)
     * Added the `threat_control` LWRP allowing to whitelist or blacklist IPs on CloudFlare (see https://support.cloudflare.com/hc/en-us/articles/200171266-How-do-I-block-or-trust-visitors-in-Threat-Control-)
 
@@ -171,3 +175,4 @@ Contributors
 ============
 
 * [Adrien Siebert](https://github.com/asiebert)
+* [Guillaume Leseur](https://github.com/gleseur)

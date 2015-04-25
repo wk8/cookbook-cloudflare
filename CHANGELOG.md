@@ -2,6 +2,10 @@
 
 This file is used to list changes made in each version of cloudflare.
 
+## 0.1.8:
+* Upgraded the cloudflare gem to 2.0.3
+* Added the `service_mode` attribute to the `cloudflare_dns_record` resource
+
 ## 0.1.7:
 
 * Added the `threat_control` LWRP allowing to whitelist or blacklist IPs on CloudFlare (see https://support.cloudflare.com/hc/en-us/articles/200171266-How-do-I-block-or-trust-visitors-in-Threat-Control-)
