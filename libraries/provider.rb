@@ -6,7 +6,7 @@ class Chef::Provider
 
     chef_gem 'cloudflare' do
       action :nothing
-      version '2.0.1' # TODO update to latest 2.0.2
+      version '2.0.3'
     end.run_action(:install, :immediately)
 
     require 'resolv'
