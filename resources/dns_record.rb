@@ -7,7 +7,7 @@ attribute :zone, :kind_of => String, :required => true
 attribute :content, :kind_of => String, :default => node.ipaddress
 attribute :type, :kind_of => String, :equal_to => ['A', 'CNAME'], :default => 'A'
 attribute :ttl, :kind_of => Fixnum, :default => 1
-attribute :service_mode => String, :default => '0'
+attribute :service_mode, :kind_of => String, :default => '0'
 attribute :shared_A_record, :kind_of => [TrueClass, FalseClass], :default => false
 
 # returns true iff the record already exists
