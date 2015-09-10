@@ -92,18 +92,31 @@ class CloudflareClient < CloudFlare::Connection
     end
 
     # we need to flush the cache when creating, editing or deleting records
-    def rec_new zone, *args
+    def rec_new(zone, type, name, content, ttl, prio = nil, service = nil, srvname = nil, protocol = nil, weight = nil, port = nil, target = nil, service_mode = '1')
         flush_cache_for_zone zone
-        super zone, *args
+        send_req({
+            a: :rec_new,
+            z: zone,
+            type: type,
+            name: name,
+            content: content,
+            ttl: ttl,
+            prio: prio,
+            service: service,
+            srvname: srvname,
+            protocol: protocol,
+            weight: weight,
+            port: port,
+            target: target,
+            service_mode: service_mode
+        })
     end
-    def rec_edit zone, *args
-        flush_cache_for_zone zone
-        super zone, *args
+    
+    def rec_delete(zone, zoneid)
+     flush_cache_for_zone zone
+     send_req({a: :rec_delete, z: zone, id: zoneid})
     end
-    def rec_delete zone, *args
-        flush_cache_for_zone zone
-        super zone, *args
-    end
+
 
     private
 
