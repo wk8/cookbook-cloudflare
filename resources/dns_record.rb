@@ -7,7 +7,6 @@ attribute :zone, :kind_of => String, :required => true
 attribute :content, :kind_of => String, :default => node.ipaddress
 attribute :type, :kind_of => String, :equal_to => ['A', 'CNAME'], :default => 'A'
 attribute :ttl, :kind_of => Fixnum, :default => 1
-attribute :service_mode, :kind_of => String, :default => '0'
 attribute :shared_A_record, :kind_of => [TrueClass, FalseClass], :default => false
 
 # returns true iff the record already exists
@@ -46,8 +45,7 @@ def exists?
       && record['display_name'] == record_name \
       && record['content'] == content \
       && record['type'] == type \
-      && record['ttl'] == ttl.to_s \
-      && record['service_mode'] == service_mode
+      && record['ttl'] == ttl.to_s
       return shared_A_record || records.length == 1
     end
   end
@@ -61,7 +59,7 @@ def name_exists?
 end
 
 def create
-  node.cloudflare_client.rec_new zone, type, record_name, content, ttl, nil, nil, nil, nil, nil, nil, nil, service_mode
+  node.cloudflare_client.rec_new zone, type, record_name, content, ttl
 end
 
 # deletes all the records with that name
